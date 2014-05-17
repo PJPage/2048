@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>2048</title>
+		<link rel="stylesheet" type="text/css" href="2048.css">
+		<script src="2048.js"></script>
+	</head>
+	<body onload="drawInit();">
+		<canvas id="window" width="400" height="400"></canvas>
+		<button onclick="moveUp();">Up</button>
+		<button onclick="moveDown();">Down</button>
+		<button onclick="moveLeft();">Left</button>
+		<button onclick="moveRight();">Right</button>
+	</body>
+</html>
