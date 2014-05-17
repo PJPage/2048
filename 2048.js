@@ -1,3 +1,5 @@
+var score = 0;
+
 var t0  = new Image();  t0.src  = "0.png";
 var t1  = new Image();  t1.src  = "2.png";
 var t2  = new Image();  t2.src  = "4.png";
@@ -24,33 +26,31 @@ document.addEventListener('keydown', function(event) {
 	else if(event.keyCode == 40) {
 		moveDown();
 	}
-	
+	document.getElementById("score").innerHTML = "Score: "+score;
 });
 
 function draw() {
-	if (changed = true) {
-		var canvas = document.getElementById("window");
-		var ctx = canvas.getContext('2d');
-		
-		ctx.fillStyle = "rgb(150,150,150)";
-		ctx.fillRect(0,0,400,400);
+	var canvas = document.getElementById("window");
+	var ctx = canvas.getContext('2d');
 	
-		changed = false;
+	ctx.fillStyle = "rgb(150,150,150)";
+	ctx.fillRect(0,0,400,400);
 
-		var xpos = 5;
-		var ypos = 5;
-		for (i=0; i<4; i++) {
-			for (x=0; x<4; x++) {
-				ctx.drawImage(grid[4 * i + x], xpos, ypos);
-				xpos += 100;
-			}
-			xpos = 5;
-			ypos += 100;
+
+	var xpos = 5;
+	var ypos = 5;
+	for (i=0; i<4; i++) {
+		for (x=0; x<4; x++) {
+			ctx.drawImage(grid[4 * i + x], xpos, ypos);
+			xpos += 100;
 		}
+		xpos = 5;
+		ypos += 100;
 	}
 }
 
-var score = 0;
+
+
 var over = false;
 var TILES = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11];
 var grid = [TILES[0], TILES[0], TILES[0], TILES[0], 
@@ -69,9 +69,11 @@ function moveUp() {
 	for (i = 0; i < 16; i++) {
 		moveTile(i, move, edge);
 	}
-	newTile();
-	draw();
-	
+	if (changed == true) {
+		newTile();
+		draw();
+		changed = false;
+	}
 }
 function moveLeft() {
 	move = -1;
@@ -85,8 +87,11 @@ function moveLeft() {
 	for (i = 0; i < 16; i++) {
 		moveTile(i, move, edge);
 	}
-	newTile();
-	draw();
+	if (changed == true) {
+		newTile();
+		draw();
+		changed = false;
+	}
 }
 function moveDown() {
 	move = 4;
@@ -100,8 +105,11 @@ function moveDown() {
 	for (i = 15; i >= 0; i--) {
 		moveTile(i, move, edge);
 	}
-	newTile();
-	draw();
+	if (changed == true) {
+		newTile();
+		draw();
+		changed = false;
+	}
 }
 function moveRight() {
 	move = 1;
@@ -115,8 +123,11 @@ function moveRight() {
 	for (i = 15; i >= 0; i--) {
 		moveTile(i, move, edge);
 	}
-	newTile();
-	draw();
+	if (changed == true) {
+		newTile();
+		draw();
+		changed = false;
+	}
 }
 function newTile() {
 	var whichTile = Math.random();
