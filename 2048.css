@@ -1,5 +1,10 @@
 body { text-align: center; }
-p {	font-family: monospace;}
-
-	
+#score {
+	font-size:25px;
+	font-family:sans;
+	}
+canvas {
+	border: 1px solid white;
+	border-radius: 15px;
+	}
 
