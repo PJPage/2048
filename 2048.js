@@ -1,3 +1,4 @@
+
 var score = 0;
 
 var t0  = new Image();  t0.src  = "0.png";
@@ -32,7 +33,7 @@ document.addEventListener('keydown', function(event) {
 function draw() {
 	var canvas = document.getElementById("window");
 	var ctx = canvas.getContext('2d');
-	
+
 	ctx.fillStyle = "rgb(150,150,150)";
 	ctx.fillRect(0,0,400,400);
 
@@ -41,11 +42,11 @@ function draw() {
 	var ypos = 5;
 	for (i=0; i<4; i++) {
 		for (x=0; x<4; x++) {
-			ctx.drawImage(grid[4 * i + x], xpos, ypos);
-			xpos += 100;
+			ctx.drawImage(TILES[grid[4 * i + x]], xpos, ypos);
+			xpos += 95;
 		}
 		xpos = 5;
-		ypos += 100;
+		ypos += 95;
 	}
 }
 
@@ -53,10 +54,10 @@ function draw() {
 
 var over = false;
 var TILES = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11];
-var grid = [TILES[0], TILES[0], TILES[0], TILES[0], 
-			TILES[0], TILES[0], TILES[0], TILES[0], 
-			TILES[0], TILES[0], TILES[0], TILES[0], 
-			TILES[0], TILES[0], TILES[0], TILES[0] ];
+var grid = [0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0 ];
 function moveUp() {
 	move = -4;
 	edge = [0, 1, 2, 3];
@@ -129,56 +130,53 @@ function moveRight() {
 		changed = false;
 	}
 }
+
 function newTile() {
 	var whichTile = Math.random();
 	if (whichTile > .9) {
-		var n = TILES[2];
+		var n = 2;
 	}
 	else {
-		var n = TILES[1];
+		var n = 1;
 	}
 	var empty = [];
-	for (i = 0; i <= 16; i++) {
-		if (grid[i] == TILES[0]) {
+	for (i = 0; i <= 15; i++) {
+		if (grid[i] == 0) {
 			empty.push(i);
 		}
 	}
 	if (empty == []) {
 		return 0;
 	}
-	var newPos = Math.round(Math.random() * empty.length);
-	grid[empty[newPos]] = n;
+	var newPos = Math.floor(Math.random() * empty.length);
+	grid[empty[newPos]] = n; 
+
 }
 function combine(i, move, edge) {
-	if (grid[i] != TILES[0] && i != edge[0] && i != edge[1] && i != edge[2] && i != edge[3]) {
+	if (grid[i] != 0 && i != edge[0] && i != edge[1] && i != edge[2] && i != edge[3]) {
 		if (grid[i + move] == grid[i]) {
-			for (x = 0; x < 11; x++) {
-				if (grid[i] == TILES[x]) {
-					grid[i + move] = TILES[x + 1];
-					grid[i] = TILES[0];
-					score += Math.pow(2, x+1);
-					changed = true;
-					if (x + 1 >= 11) {
-						console.log("You Win!");
-					}
-				}
+			grid[i + move] = grid[i] + 1
+			grid[i] = 0
+			score += Math.pow(2, grid[i + move]);
+			changed = true;
+			if (x + 1 >= 11) {
+				console.log("You Win!");
 			}
 		}
 	}
 }
 function moveTile(i, move, edge) {
-	if (grid[i] != TILES[0] && i != edge[0] && i != edge[1] && i != edge[2] && i != edge[3]) {
-		if (grid[i + move] == TILES[0]) {
+	if (grid[i] != 0 && i != edge[0] && i != edge[1] && i != edge[2] && i != edge[3]) {
+		if (grid[i + move] == 0) {
 			grid[i + move] = grid[i];
-			grid[i] = TILES[0];
+			grid[i] = 0;
 			moveTile(i + move, move, edge);
 			changed = true;
 		}
 	}
 }
-			
+
 
 
 newTile();
 newTile();
-	
