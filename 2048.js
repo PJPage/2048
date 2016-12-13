@@ -1,67 +1,88 @@
+var GRID_SIZE = 4;
+var PIECE_SIZE = 100;
+var COLORS = [ "#212121", "#8D6E63", "#6D4C41", "#EF6C00", "#E65100", "#B71C1C", "#880E4F", "#6A1B9A", "#4A148C", "#3F51B5", "#1A237E" ];
+var BOARD_COLOR = "#9E9E9E";
+var FONT_SIZE = 30;
 
-var score = 0;
-
-var t0  = new Image();  t0.src  = "0.png";
-var t1  = new Image();  t1.src  = "2.png";
-var t2  = new Image();  t2.src  = "4.png";
-var t3  = new Image();  t3.src  = "8.png";
-var t4  = new Image();  t4.src  = "16.png";
-var t5  = new Image();  t5.src  = "32.png";
-var t6  = new Image();  t6.src  = "64.png";
-var t7  = new Image();  t7.src  = "128.png";
-var t8  = new Image();  t8.src  = "256.png";
-var t9  = new Image();  t9.src  = "512.png";
-var t10 = new Image();  t10.src = "1024.png";
-var t11 = new Image();  t11.src = "2048.png";
-
-document.addEventListener('keydown', function(event) {
-	if(event.keyCode == 37) {
-		moveLeft();
-	}
-	else if(event.keyCode == 38) {
-		moveUp();
-	}
-	else if(event.keyCode == 39) {
-		moveRight();
-	}
-	else if(event.keyCode == 40) {
-		moveDown();
-	}
-	document.getElementById("score").innerHTML = "Score: "+score;
-});
-
-function draw() {
-	var canvas = document.getElementById("window");
-	var ctx = canvas.getContext('2d');
-
-	ctx.fillStyle = "rgb(150,150,150)";
-	ctx.fillRect(0,0,400,400);
-
-
-	var xpos = 5;
-	var ypos = 5;
-	for (i=0; i<4; i++) {
-		for (x=0; x<4; x++) {
-			ctx.drawImage(TILES[grid[4 * i + x]], xpos, ypos);
-			xpos += 95;
-		}
-		xpos = 5;
-		ypos += 95;
-	}
-}
-
-
+var canvas;
+var ctx;
 
 var over = false;
-var TILES = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11];
+var score = 0;
 var grid = [0, 0, 0, 0,
 			0, 0, 0, 0,
 			0, 0, 0, 0,
 			0, 0, 0, 0 ];
+
+window.onload = function() {
+    document.addEventListener('keydown', function(event) {
+        switch (event.keyCode) {
+            case 37:
+                moveLeft();
+                break;
+            case 38:
+                moveUp();
+                break;
+            case 39:
+                moveRight();
+                break;
+            case 40:
+                moveDown();
+                break;
+        }
+        document.getElementById("score").innerHTML = "Score: "+score;
+    });
+
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext('2d');
+
+    canvas.width = canvas.height = GRID_SIZE * PIECE_SIZE;
+
+    newTile();
+    newTile();
+    draw();
+}
+
+
+function draw() {
+	ctx.fillStyle = BOARD_COLOR;
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for (var i = 0; i < grid.length; i++) {
+        drawPiece(i, grid[i]);
+    }
+}
+
+
+function drawPiece(pos, val) {
+    var x = pos % GRID_SIZE;
+    var y = (pos - pos % GRID_SIZE) / GRID_SIZE;
+
+    var piece_x = x * PIECE_SIZE;
+    var piece_y = y * PIECE_SIZE;
+
+    var text_x = piece_x + (PIECE_SIZE / 2);
+    var text_y = piece_y + (PIECE_SIZE / 2); 
+
+    if (val > 0) {
+        ctx.fillStyle = COLORS[val % COLORS.length];
+        ctx.fillRect(piece_x, piece_y, PIECE_SIZE, PIECE_SIZE);
+
+        ctx.font = FONT_SIZE + "px Sans";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "white";
+        ctx.fillText(Math.pow(2, val), text_x, text_y);
+
+
+    }
+
+}
+
 function moveUp() {
 	move = -4;
 	edge = [0, 1, 2, 3];
-	for (i = 0; i < 16; i++) {
+	for (var i = 0; i < 16; i++) {
 		moveTile(i, move, edge);
 	}
 	for (i = 0; i < 16; i++) {
@@ -79,13 +100,13 @@ function moveUp() {
 function moveLeft() {
 	move = -1;
 	edge = [0, 4, 8, 12];
-	for (i = 0; i < 16; i++) {
+	for (var i = 0; i < 16; i++) {
 		moveTile(i, move, edge);
 	}
-	for (i = 0; i < 16; i++) {
+	for (var i = 0; i < 16; i++) {
 		combine(i, move, edge);
 	}
-	for (i = 0; i < 16; i++) {
+	for (var i = 0; i < 16; i++) {
 		moveTile(i, move, edge);
 	}
 	if (changed == true) {
@@ -97,13 +118,13 @@ function moveLeft() {
 function moveDown() {
 	move = 4;
 	edge = [12, 13, 14, 15];
-	for (i = 15; i >= 0; i--) {
+	for (var i = 15; i >= 0; i--) {
 		moveTile(i, move, edge);
 	}
-	for (i = 15; i >= 0; i--) {
+	for (var i = 15; i >= 0; i--) {
 		combine(i, move, edge);
 	}
-	for (i = 15; i >= 0; i--) {
+	for (var i = 15; i >= 0; i--) {
 		moveTile(i, move, edge);
 	}
 	if (changed == true) {
@@ -159,7 +180,7 @@ function combine(i, move, edge) {
 			grid[i] = 0
 			score += Math.pow(2, grid[i + move]);
 			changed = true;
-			if (x + 1 >= 11) {
+			if (grid[i] + 1 >= 11) {
 				console.log("You Win!");
 			}
 		}
@@ -175,8 +196,3 @@ function moveTile(i, move, edge) {
 		}
 	}
 }
-
-
-
-newTile();
-newTile();
