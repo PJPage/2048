@@ -1,8 +1,11 @@
 var GRID_SIZE = 4;
 var PIECE_SIZE = 100;
 var COLORS = [ "#212121", "#8D6E63", "#6D4C41", "#EF6C00", "#E65100", "#B71C1C", "#880E4F", "#6A1B9A", "#4A148C", "#3F51B5", "#1A237E" ];
-var BOARD_COLOR = "#9E9E9E";
+//var BOARD_COLOR = "#9E9E9E";
+var BOARD_COLOR = "#BDBDBD";
+
 var FONT_SIZE = 30;
+var OFFSET = 2;
 
 var canvas;
 var ctx;
@@ -65,8 +68,11 @@ function drawPiece(pos, val) {
     var text_y = piece_y + (PIECE_SIZE / 2); 
 
     if (val > 0) {
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'; 
         ctx.fillStyle = COLORS[val % COLORS.length];
-        ctx.fillRect(piece_x, piece_y, PIECE_SIZE, PIECE_SIZE);
+        ctx.fillRect(piece_x + OFFSET, piece_y + OFFSET, PIECE_SIZE - (2 * OFFSET), PIECE_SIZE - (2 * OFFSET));
+        ctx.shadowBlur = 0;
 
         ctx.font = FONT_SIZE + "px Sans";
         ctx.textAlign = "center";
