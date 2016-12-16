@@ -9,10 +9,10 @@ var ctx;
 
 var over = false;
 var score = 0;
-var grid = [0, 0, 0, 0,
-			0, 0, 0, 0,
-			0, 0, 0, 0,
-			0, 0, 0, 0 ];
+var grid = [];
+for (var i = 0; i < Math.pow(GRID_SIZE, 2); i++) {
+    grid.push(0);
+}
 
 window.onload = function() {
     document.addEventListener('keydown', function(event) {
@@ -80,76 +80,36 @@ function drawPiece(pos, val) {
 }
 
 function moveUp() {
-	move = -4;
-	edge = [0, 1, 2, 3];
-	for (var i = 0; i < 16; i++) {
-		moveTile(i, move, edge);
-	}
-	for (i = 0; i < 16; i++) {
-		combine(i, move, edge);
-	}
-	for (i = 0; i < 16; i++) {
-		moveTile(i, move, edge);
-	}
-	if (changed == true) {
-		newTile();
-		draw();
-		changed = false;
-	}
+	direction = -GRID_SIZE;
+	edge = [];
+    for (var i = 0; i < GRID_SIZE; i++) {
+        edge.push(i);
+    }
+    moveTiles(direction, edge);
 }
 function moveLeft() {
-	move = -1;
-	edge = [0, 4, 8, 12];
-	for (var i = 0; i < 16; i++) {
-		moveTile(i, move, edge);
-	}
-	for (var i = 0; i < 16; i++) {
-		combine(i, move, edge);
-	}
-	for (var i = 0; i < 16; i++) {
-		moveTile(i, move, edge);
-	}
-	if (changed == true) {
-		newTile();
-		draw();
-		changed = false;
-	}
+	direction = -1;
+	edge = [];
+    for (var i = 0; i < GRID_SIZE; i++) {
+        edge.push(i * GRID_SIZE);
+    }
+    moveTiles(direction, edge);
 }
 function moveDown() {
-	move = 4;
-	edge = [12, 13, 14, 15];
-	for (var i = 15; i >= 0; i--) {
-		moveTile(i, move, edge);
-	}
-	for (var i = 15; i >= 0; i--) {
-		combine(i, move, edge);
-	}
-	for (var i = 15; i >= 0; i--) {
-		moveTile(i, move, edge);
-	}
-	if (changed == true) {
-		newTile();
-		draw();
-		changed = false;
-	}
+	direction = GRID_SIZE;
+	edge = [];
+    for (var i = 0; i < GRID_SIZE; i++) {
+        edge.push(i + GRID_SIZE * (GRID_SIZE - 1));
+    }
+    moveTiles(direction, edge);
 }
 function moveRight() {
-	move = 1;
-	edge = [3, 7, 11, 15];
-	for (i = 15; i >= 0; i--) {
-		moveTile(i, move, edge);
-	}
-	for (i = 15; i >= 0; i--) {
-		combine(i, move, edge);
-	}
-	for (i = 15; i >= 0; i--) {
-		moveTile(i, move, edge);
-	}
-	if (changed == true) {
-		newTile();
-		draw();
-		changed = false;
-	}
+	direction = 1;
+	edge = [];
+    for (var i = 0; i < GRID_SIZE; i++) {
+        edge.push((i + 1) * GRID_SIZE - 1);
+    }
+    moveTiles(direction, edge);
 }
 
 function newTile() {
@@ -161,7 +121,7 @@ function newTile() {
 		var n = 1;
 	}
 	var empty = [];
-	for (i = 0; i <= 15; i++) {
+	for (i = 0; i < grid.length; i++) {
 		if (grid[i] == 0) {
 			empty.push(i);
 		}
@@ -173,25 +133,47 @@ function newTile() {
 	grid[empty[newPos]] = n; 
 
 }
-function combine(i, move, edge) {
-	if (grid[i] != 0 && i != edge[0] && i != edge[1] && i != edge[2] && i != edge[3]) {
-		if (grid[i + move] == grid[i]) {
-			grid[i + move] = grid[i] + 1
-			grid[i] = 0
-			score += Math.pow(2, grid[i + move]);
+function moveTiles(direction, edge) {
+	for (var i = 0; i < grid.length; i++) {
+		moveTile(i, direction, edge);
+	}
+	for (var i = 0; i < grid.length; i++) {
+		combine(i, direction, edge);
+	}
+	for (var i = 0; i < grid.length; i++) {
+		moveTile(i, direction, edge);
+	}
+	if (changed) {
+		newTile();
+		draw();
+		changed = false;
+	}
+
+}
+function isEdge(piece, edge) {
+    for (var i = 0; i < edge.length; i++) {
+        if (edge[i] == piece) {
+            return true;
+        }
+    }
+    return false;
+}
+function combine(piece, direction, edge) {
+	if (grid[piece] != 0 && !isEdge(piece, edge)) {
+		if (grid[piece + direction] == grid[piece]) {
+			grid[piece + direction] = grid[piece] + 1;
+			grid[piece] = 0;
+			score += Math.pow(2, grid[piece + direction]);
 			changed = true;
-			if (grid[i] + 1 >= 11) {
-				console.log("You Win!");
-			}
 		}
 	}
 }
-function moveTile(i, move, edge) {
-	if (grid[i] != 0 && i != edge[0] && i != edge[1] && i != edge[2] && i != edge[3]) {
-		if (grid[i + move] == 0) {
-			grid[i + move] = grid[i];
-			grid[i] = 0;
-			moveTile(i + move, move, edge);
+function moveTile(piece, direction, edge) {
+	if (grid[piece] != 0 && !isEdge(piece, edge)) {
+		if (grid[piece + direction] == 0) {
+			grid[piece + direction] = grid[piece];
+			grid[piece] = 0;
+			moveTile(piece + direction, direction, edge);
 			changed = true;
 		}
 	}
