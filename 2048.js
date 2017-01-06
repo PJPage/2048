@@ -86,32 +86,32 @@ function drawPiece(pos, val) {
 }
 
 function moveUp() {
-	direction = -GRID_SIZE;
-	edge = [];
+	var direction = -GRID_SIZE;
+	var edge = [];
     for (var i = 0; i < GRID_SIZE; i++) {
         edge.push(i);
     }
     moveTiles(direction, edge);
 }
 function moveLeft() {
-	direction = -1;
-	edge = [];
+	var direction = -1;
+	var edge = [];
     for (var i = 0; i < GRID_SIZE; i++) {
         edge.push(i * GRID_SIZE);
     }
     moveTiles(direction, edge);
 }
 function moveDown() {
-	direction = GRID_SIZE;
-	edge = [];
+	var direction = GRID_SIZE;
+	var edge = [];
     for (var i = 0; i < GRID_SIZE; i++) {
         edge.push(i + GRID_SIZE * (GRID_SIZE - 1));
     }
     moveTiles(direction, edge);
 }
 function moveRight() {
-	direction = 1;
-	edge = [];
+	var direction = 1;
+	var edge = [];
     for (var i = 0; i < GRID_SIZE; i++) {
         edge.push((i + 1) * GRID_SIZE - 1);
     }
@@ -140,15 +140,27 @@ function newTile() {
 
 }
 function moveTiles(direction, edge) {
-	for (var i = 0; i < grid.length; i++) {
-		moveTile(i, direction, edge);
-	}
-	for (var i = 0; i < grid.length; i++) {
-		combine(i, direction, edge);
-	}
-	for (var i = 0; i < grid.length; i++) {
-		moveTile(i, direction, edge);
-	}
+    if (direction < 0) {
+        for (var i = 0; i < grid.length; i++) {
+            moveTile(i, direction, edge);
+        }
+        for (var i = 0; i < grid.length; i++) {
+            combine(i, direction, edge);
+        }
+        for (var i = 0; i < grid.length; i++) {
+            moveTile(i, direction, edge);
+        }
+    } else {
+        for (var i = grid.length - 1; i >= 0; i--) {
+            moveTile(i, direction, edge);
+        }
+        for (var i = grid.length - 1; i >= 0; i--) {
+            combine(i, direction, edge);
+        }
+        for (var i = grid.length - 1; i >= 0; i--) {
+            moveTile(i, direction, edge);
+        }
+    }
 	if (changed) {
 		newTile();
 		draw();
