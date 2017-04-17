@@ -1,20 +1,36 @@
-var GRID_SIZE = 4;
-var PIECE_SIZE = 100;
+var c, ctx;
+
+var gridSize = 4;
+var pieceSize;
+var offset = 2;
+
 var COLORS = [ "#212121", "#8D6E63", "#6D4C41", "#EF6C00", "#E65100", "#B71C1C", "#880E4F", "#6A1B9A", "#4A148C", "#3F51B5", "#1A237E" ];
-//var BOARD_COLOR = "#9E9E9E";
-var BOARD_COLOR = "#BDBDBD";
-
+var BOARD_COLOR = "#9E9E9E";
 var FONT_SIZE = 30;
-var OFFSET = 2;
 
-var canvas;
-var ctx;
 
-var over = false;
-var score = 0;
-var grid = [];
-for (var i = 0; i < Math.pow(GRID_SIZE, 2); i++) {
-    grid.push(0);
+var over, score, grid;
+
+function setCanvasSize() {
+    if (window.innerWidth > window.innerHeight) {
+        c.width = c.height = window.innerHeight * 0.7;
+    } else {
+        c.width = c.height = window.innerWidth * 0.7;
+    }
+
+    pieceSize = c.width / gridSize;
+}
+
+function newGame() {
+    over = false;
+    score = 0;
+    grid = [];
+    for (var i = 0; i < Math.pow(gridSize, 2); i++) {
+        grid.push(0);
+    }
+    newTile();
+    newTile();
+    console.log("hello");
 }
 
 window.onload = function() {
@@ -36,42 +52,45 @@ window.onload = function() {
         document.getElementById("score").innerHTML = "Score: "+score;
     });
 
-    canvas = document.getElementById("canvas");
-    ctx = canvas.getContext('2d');
+    c = document.getElementById("canvas");
+    ctx = c.getContext('2d');
 
-    canvas.width = canvas.height = GRID_SIZE * PIECE_SIZE;
+    newGame();
 
-    newTile();
-    newTile();
-    draw();
+    setCanvasSize();
+
+    window.addEventListener("resize", setCanvasSize, false);
+
+    requestAnimationFrame(draw);
 }
 
 
 function draw() {
 	ctx.fillStyle = BOARD_COLOR;
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	ctx.fillRect(0, 0, c.width, c.height);
 
     for (var i = 0; i < grid.length; i++) {
         drawPiece(i, grid[i]);
     }
+    requestAnimationFrame(draw);
 }
 
 
 function drawPiece(pos, val) {
-    var x = pos % GRID_SIZE;
-    var y = (pos - pos % GRID_SIZE) / GRID_SIZE;
+    var x = pos % gridSize;
+    var y = (pos - pos % gridSize) / gridSize;
 
-    var piece_x = x * PIECE_SIZE;
-    var piece_y = y * PIECE_SIZE;
+    var piece_x = x * pieceSize;
+    var piece_y = y * pieceSize;
 
-    var text_x = piece_x + (PIECE_SIZE / 2);
-    var text_y = piece_y + (PIECE_SIZE / 2); 
+    var text_x = piece_x + (pieceSize / 2);
+    var text_y = piece_y + (pieceSize / 2); 
 
     if (val > 0) {
         ctx.shadowBlur = 4;
         ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'; 
         ctx.fillStyle = COLORS[val % COLORS.length];
-        ctx.fillRect(piece_x + OFFSET, piece_y + OFFSET, PIECE_SIZE - (2 * OFFSET), PIECE_SIZE - (2 * OFFSET));
+        ctx.fillRect(piece_x + offset, piece_y + offset, pieceSize - (2 * offset), pieceSize - (2 * offset));
         ctx.shadowBlur = 0;
 
         ctx.font = FONT_SIZE + "px Sans";
@@ -86,9 +105,9 @@ function drawPiece(pos, val) {
 }
 
 function moveUp() {
-	var direction = -GRID_SIZE;
+	var direction = -gridSize;
 	var edge = [];
-    for (var i = 0; i < GRID_SIZE; i++) {
+    for (var i = 0; i < gridSize; i++) {
         edge.push(i);
     }
     moveTiles(direction, edge);
@@ -96,24 +115,24 @@ function moveUp() {
 function moveLeft() {
 	var direction = -1;
 	var edge = [];
-    for (var i = 0; i < GRID_SIZE; i++) {
-        edge.push(i * GRID_SIZE);
+    for (var i = 0; i < gridSize; i++) {
+        edge.push(i * gridSize);
     }
     moveTiles(direction, edge);
 }
 function moveDown() {
-	var direction = GRID_SIZE;
+	var direction = gridSize;
 	var edge = [];
-    for (var i = 0; i < GRID_SIZE; i++) {
-        edge.push(i + GRID_SIZE * (GRID_SIZE - 1));
+    for (var i = 0; i < gridSize; i++) {
+        edge.push(i + gridSize * (gridSize - 1));
     }
     moveTiles(direction, edge);
 }
 function moveRight() {
 	var direction = 1;
 	var edge = [];
-    for (var i = 0; i < GRID_SIZE; i++) {
-        edge.push((i + 1) * GRID_SIZE - 1);
+    for (var i = 0; i < gridSize; i++) {
+        edge.push((i + 1) * gridSize - 1);
     }
     moveTiles(direction, edge);
 }
@@ -163,7 +182,6 @@ function moveTiles(direction, edge) {
     }
 	if (changed) {
 		newTile();
-		draw();
 		changed = false;
 	}
 
